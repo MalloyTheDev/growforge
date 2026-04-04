@@ -199,6 +199,14 @@ PHENO_SCORE_CATEGORIES = [
     "Flavor",
 ]
 
+# ─── Growing Hub Stage Groups ──────────────────────────────────────────────
+# Maps conceptual Growing Hub sub-tabs to database stage values
+STAGE_GROUPS = {
+    "seed":   ["Germination", "Seedling"],
+    "veg":    ["Vegetative"],
+    "flower": ["Flowering", "Flushing"],
+}
+
 # ─── Rooting Methods ───────────────────────────────────────────────────────
 ROOTING_METHODS = [
     "Rooting Gel + Rapid Rooter",

@@ -25,21 +25,33 @@ class DashboardTab:
         )
         scroll.pack(fill="both", expand=True, padx=0, pady=0)
 
-        # Header
-        header = ctk.CTkFrame(scroll, fg_color="transparent")
-        header.pack(fill="x", padx=25, pady=(20, 5))
+        # Hero header
+        hero = ctk.CTkFrame(scroll, fg_color=self.colors["bg_card"], corner_radius=14)
+        hero.pack(fill="x", padx=25, pady=(20, 5))
+
+        hero_inner = ctk.CTkFrame(hero, fg_color="transparent")
+        hero_inner.pack(fill="x", padx=20, pady=16)
 
         ctk.CTkLabel(
-            header, text="📊 Dashboard",
-            font=ctk.CTkFont(size=26, weight="bold"),
-            text_color=self.colors["fg_primary"],
+            hero_inner, text="🌿 GrowForge",
+            font=ctk.CTkFont(size=28, weight="bold"),
+            text_color=self.colors["accent"],
         ).pack(side="left")
 
+        date_frame = ctk.CTkFrame(hero_inner, fg_color="transparent")
+        date_frame.pack(side="right")
+
         ctk.CTkLabel(
-            header, text=datetime.now().strftime("%A, %B %d, %Y"),
-            font=ctk.CTkFont(size=13),
+            date_frame, text=datetime.now().strftime("%A, %B %d, %Y"),
+            font=ctk.CTkFont(size=13, weight="bold"),
+            text_color=self.colors["fg_primary"],
+        ).pack(anchor="e")
+
+        ctk.CTkLabel(
+            date_frame, text="From Seed to Harvest",
+            font=ctk.CTkFont(size=11),
             text_color=self.colors["fg_muted"],
-        ).pack(side="right", padx=10)
+        ).pack(anchor="e")
 
         # Stats cards
         stats = get_stats()
@@ -47,38 +59,66 @@ class DashboardTab:
         cards_frame.pack(fill="x", padx=25, pady=15)
 
         stat_items = [
-            ("🌱", "Active Plants", stats.get("active_plants", 0)),
-            ("🏠", "Environments", stats.get("environments", 0)),
-            ("🌾", "Harvested", stats.get("total_harvested", 0)),
-            ("⚖️", "Total Yield", f"{stats.get('total_yield', 0):.0f}g"),
-            ("🧬", "Mothers", stats.get("mothers", 0)),
-            ("🔬", "Crosses", stats.get("crosses", 0)),
-            ("📝", "Journal Entries", stats.get("total_events", 0)),
-            ("🔔", "Reminders", stats.get("pending_reminders", 0)),
+            ("🌱", "Active Plants", stats.get("active_plants", 0), self.colors["accent"]),
+            ("🏠", "Environments", stats.get("environments", 0), self.colors["info"]),
+            ("🌾", "Harvested", stats.get("total_harvested", 0), self.colors["success"]),
+            ("⚖️", "Total Yield", f"{stats.get('total_yield', 0):.0f}g", self.colors["warning"]),
+            ("🧬", "Mothers", stats.get("mothers", 0), self.colors["accent"]),
+            ("🔬", "Crosses", stats.get("crosses", 0), self.colors["info"]),
+            ("📝", "Journal Entries", stats.get("total_events", 0), self.colors["fg_secondary"]),
+            ("🔔", "Pending Reminders", stats.get("pending_reminders", 0), self.colors["warning"]),
         ]
 
-        for i, (icon, label, value) in enumerate(stat_items):
+        for i, (icon, label, value, color) in enumerate(stat_items):
             card = ctk.CTkFrame(
                 cards_frame, fg_color=self.colors["bg_card"],
-                corner_radius=12, height=90,
+                corner_radius=12, height=95,
             )
             card.grid(row=i // 4, column=i % 4, padx=6, pady=6, sticky="nsew")
             cards_frame.grid_columnconfigure(i % 4, weight=1)
+            card.pack_propagate(False)
 
             inner = ctk.CTkFrame(card, fg_color="transparent")
             inner.pack(expand=True, fill="both", padx=15, pady=12)
 
             ctk.CTkLabel(
-                inner, text=f"{icon} {label}",
+                inner, text=f"{icon}  {label}",
                 font=ctk.CTkFont(size=11),
                 text_color=self.colors["fg_muted"],
             ).pack(anchor="w")
 
             ctk.CTkLabel(
                 inner, text=str(value),
-                font=ctk.CTkFont(size=28, weight="bold"),
-                text_color=self.colors["accent"],
+                font=ctk.CTkFont(size=30, weight="bold"),
+                text_color=color,
             ).pack(anchor="w", pady=(2, 0))
+
+        # Quick navigation buttons
+        quick_nav_frame = ctk.CTkFrame(scroll, fg_color="transparent")
+        quick_nav_frame.pack(fill="x", padx=25, pady=(0, 10))
+
+        quick_actions = [
+            ("🌱 Growing", "growing"),
+            ("🔬 Breeding", "breeding"),
+            ("🧬 Cloning", "cloning"),
+            ("📓 Journal", "journal"),
+            ("🩺 Deficiency", "deficiency"),
+            ("🤖 AI Chat", "ai_assistant"),
+        ]
+
+        for label, tab_id in quick_actions:
+            btn = ctk.CTkButton(
+                quick_nav_frame,
+                text=label,
+                height=32,
+                corner_radius=8,
+                font=ctk.CTkFont(size=12),
+                fg_color=self.colors["bg_tertiary"],
+                hover_color=self.colors["highlight"],
+                text_color=self.colors["fg_secondary"],
+                command=lambda t=tab_id: self.app.show_tab(t),
+            )
+            btn.pack(side="left", padx=4)
 
         # Two-column layout
         columns = ctk.CTkFrame(scroll, fg_color="transparent")

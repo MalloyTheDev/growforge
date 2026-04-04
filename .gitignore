@@ -1,0 +1,20 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Database (user data — not committed)
+growforge.db
+
+# Exports, backups, photos (runtime-generated)
+exports/
+backups/
+photos/
+
+# Environment
+.env
+*.env
+
+# OS
+.DS_Store
+Thumbs.db

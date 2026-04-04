@@ -81,12 +81,13 @@ class MainWindow:
         self.nav_buttons = {}
         nav_items = [
             ("dashboard", "📊  Dashboard"),
-            ("plants", "🌱  Plants"),
-            ("environments", "🏠  Environments"),
+            ("growing", "🌱  Growing"),
+            ("plants", "🌿  All Plants"),
+            ("breeding", "🔬  Breeding Lab"),
+            ("cloning", "🧬  Cloning Station"),
+            ("environments", "🏕️  Environments"),
             ("journal", "📓  Grow Journal"),
             ("calendar", "📅  Calendar"),
-            ("cloning", "🧬  Cloning Station"),
-            ("breeding", "🔬  Breeding Lab"),
             ("deficiency", "🩺  Deficiency Wizard"),
             ("tools", "🔧  Tools"),
             ("ai_assistant", "🤖  AI Assistant"),
@@ -115,9 +116,15 @@ class MainWindow:
             btn.pack(fill="x", padx=5, pady=2)
             self.nav_buttons[tab_id] = btn
 
+            # Section separator after Cloning Station
+            if tab_id == "cloning":
+                sep = ctk.CTkFrame(nav_scroll, height=1, fg_color=self.colors["border"])
+                sep.pack(fill="x", padx=10, pady=6)
+
     def _load_tabs(self):
         """Import and initialize all tab modules."""
         from ui.dashboard import DashboardTab
+        from ui.growing_hub import GrowingHubTab
         from ui.plants_tab import PlantsTab
         from ui.environments_tab import EnvironmentsTab
         from ui.journal_tab import JournalTab
@@ -131,6 +138,7 @@ class MainWindow:
 
         self.tabs = {
             "dashboard": DashboardTab,
+            "growing": GrowingHubTab,
             "plants": PlantsTab,
             "environments": EnvironmentsTab,
             "journal": JournalTab,
