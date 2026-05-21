@@ -1,19 +1,26 @@
-# Python bytecode
-__pycache__/
-*.py[cod]
-*.pyo
+# Build output
+build/
+dist/
+*.o
+*.obj
+*.exe
 
-# Database (user data — not committed)
-growforge.db
-
-# Exports, backups, photos (runtime-generated)
+# Local runtime data (created next to the executable)
+*.db
+*.db-shm
+*.db-wal
 exports/
 backups/
 photos/
 
-# Environment
-.env
-*.env
+# Dev screenshots (the curated ones live in growforge-qt/docs/)
+shot_*.png
+_t.png
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.user
 
 # OS
 .DS_Store

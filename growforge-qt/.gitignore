@@ -1,0 +1,15 @@
+# Build output
+/build/
+/dist/
+
+# Runtime data (created next to the executable on first launch)
+growforge.db
+growforge.db-*
+/data/
+/photos/
+/exports/
+/backups/
+
+# Dev screenshots
+shot_*.png
+_t.png
