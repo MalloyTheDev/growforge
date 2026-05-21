@@ -14,6 +14,7 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QDoubleValidator>
+#include <QDateTime>
 
 static QLineEdit *numField(const QString &placeholder) {
     auto *e = new QLineEdit;
@@ -115,7 +116,10 @@ Row EventDialog::data() const {
     Row r;
     r["plant_id"] = m_plantId;
     r["event_type"] = m_type->currentText();
-    r["event_date"] = m_date->date().toString("yyyy-MM-dd HH:mm:ss");
+    // Combine the picked date with the current time — QDate alone would emit a
+    // literal "HH:mm:ss" and corrupt event ordering.
+    r["event_date"] = QDateTime(m_date->date(), QTime::currentTime())
+                          .toString("yyyy-MM-dd HH:mm:ss");
     r["title"] = m_title->text().trimmed();
     r["notes"] = m_notes->toPlainText().trimmed();
     auto addNum = [&](const QString &key, QLineEdit *e) {
