@@ -2,12 +2,12 @@
 
 #include "ui/Page.h"
 #include <QStringList>
-#include <QSet>
+#include <QList>
 
 class QVBoxLayout;
 class QComboBox;
 class QDoubleSpinBox;
-class QPushButton;
+class QCheckBox;
 
 class DeficiencyWizardTab : public Page {
     Q_OBJECT
@@ -16,8 +16,10 @@ public:
 
 private:
     void diagnose();
+    void clearResults();
+
     QVBoxLayout *m_results = nullptr;
-    QList<QPushButton *> m_symptomChecks;
+    QList<QCheckBox *> m_symptomChecks;   // aligned with the curated symptom list
     QComboBox *m_leaf = nullptr;
     QComboBox *m_medium = nullptr;
     QDoubleSpinBox *m_ph = nullptr;

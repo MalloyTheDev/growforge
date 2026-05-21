@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QString>
+#include <QSet>
 
 class QStackedWidget;
 class QPushButton;
@@ -33,6 +34,9 @@ public:
 
     void switchTheme(const QString &theme);
 
+    // Run a global text search (navigates to the Grow Journal, filtered).
+    void runSearch(const QString &text);
+
 signals:
     void roomChanged(int envId);
 
@@ -57,4 +61,5 @@ private:
     QList<NavItem> m_nav;
     int m_roomId = -1;
     ReminderEngine *m_reminders = nullptr;
+    QSet<int> m_notifiedReminders;   // reminder ids already toasted this session
 };

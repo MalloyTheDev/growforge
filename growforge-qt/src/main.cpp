@@ -10,6 +10,8 @@
 #include "data/Database.h"
 #include "data/KnowledgeBase.h"
 #include "ui/MainWindow.h"
+#include "ui/widgets/Icons.h"
+#include <QIcon>
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +19,7 @@ int main(int argc, char *argv[])
     app.setApplicationName(Config::APP_NAME);
     app.setApplicationVersion(Config::APP_VERSION);
     app.setOrganizationName("GrowForge");
+    app.setWindowIcon(Icons::icon("growing", 64, QColor(Config::DARK.accent)));
 
     // Data lives next to the executable (mirrors the Python app layout).
     const QString base = QCoreApplication::applicationDirPath();

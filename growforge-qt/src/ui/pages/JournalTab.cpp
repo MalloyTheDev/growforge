@@ -10,6 +10,7 @@
 
 #include <QPushButton>
 #include <QComboBox>
+#include <QLineEdit>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
@@ -109,17 +110,24 @@ void JournalTab::refresh() {
         }
     });
 
+    auto *searchEdit = new QLineEdit;
+    searchEdit->setPlaceholderText("Search notes…");
+    searchEdit->setClearButtonEnabled(true);
+    searchEdit->setText(m_textFilter);
+    searchEdit->setMaximumWidth(220);
+
     auto *filterRow = new QWidget;
     auto *fr = new QHBoxLayout(filterRow);
     fr->setContentsMargins(0, 0, 0, 0);
     fr->setSpacing(8);
     fr->addWidget(plantCombo);
     fr->addWidget(typeCombo);
+    fr->addWidget(searchEdit);
     fr->addStretch();
     fr->addWidget(logBtn);
 
     root->addWidget(makePageHeader("Grow Journal",
-        "Every logged event across your plants — filter by plant or type."));
+        "Every logged event across your plants — filter by plant, type, or text."));
     root->addWidget(filterRow);
 
     connect(plantCombo, &QComboBox::currentIndexChanged, this, [this, plantCombo](int) {
@@ -127,6 +135,11 @@ void JournalTab::refresh() {
     });
     connect(typeCombo, &QComboBox::currentIndexChanged, this, [this, typeCombo](int) {
         m_typeFilter = typeCombo->currentData().toString(); refresh();
+    });
+    connect(searchEdit, &QLineEdit::editingFinished, this, [this, searchEdit]() {
+        if (searchEdit->text().trimmed() != m_textFilter) {
+            m_textFilter = searchEdit->text().trimmed(); refresh();
+        }
     });
 
     // Query events
@@ -136,6 +149,18 @@ void JournalTab::refresh() {
     if (!m_typeFilter.isEmpty()) {
         Rows filtered;
         for (const Row &e : events) if (M::s(e, "event_type") == m_typeFilter) filtered << e;
+        events = filtered;
+    }
+    if (!m_textFilter.isEmpty()) {
+        const QString q = m_textFilter.toLower();
+        Rows filtered;
+        for (const Row &e : events) {
+            if (M::s(e, "notes").toLower().contains(q) ||
+                M::s(e, "title").toLower().contains(q) ||
+                M::s(e, "event_type").toLower().contains(q) ||
+                M::s(e, "plant_name").toLower().contains(q))
+                filtered << e;
+        }
         events = filtered;
     }
 
@@ -152,4 +177,11 @@ void JournalTab::refresh() {
     }
     root->addWidget(card);
     root->addStretch();
+}
+
+void JournalTab::setTextFilter(const QString &text) {
+    m_textFilter = text.trimmed();
+    m_plantFilter = -1;     // search across all plants
+    m_typeFilter.clear();
+    refresh();
 }

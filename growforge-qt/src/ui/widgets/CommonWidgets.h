@@ -27,9 +27,6 @@ QLabel  *makeStageBadge(const QString &stage);
 QFrame  *hLine();
 QFrame  *vLine();
 
-// A checkable pill "chip" toggle button (Growjs .chip style).
-QPushButton *makeChip(const QString &text);
-
 // A page header: big title + subtitle on the left, optional widget on the right.
 QWidget *makePageHeader(const QString &title, const QString &subtitle,
                         QWidget *rightWidget = nullptr);

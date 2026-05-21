@@ -4,11 +4,14 @@
 #include "app/Theme.h"
 #include "app/Config.h"
 #include "data/Database.h"
+#include "core/ReminderEngine.h"
 
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QLabel>
+#include <QPushButton>
+#include <QDateTime>
 
 static QWidget *plantRow(const Row &p) {
     auto *w = new QWidget;
@@ -96,22 +99,39 @@ void DashboardTab::refresh() {
     auto *right = new QVBoxLayout;
     right->setSpacing(14);
 
-    auto *remCard = new Card("Upcoming Reminders");
-    const Rows rem = Db::getUpcomingReminders(7);
+    auto *remCard = new Card("Reminders");
+    // Incomplete reminders due within the next 7 days, including overdue ones.
+    const QString cutoff = QDateTime::currentDateTime().addDays(7).toString("yyyy-MM-dd HH:mm:ss");
+    const QString nowStr = QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss");
+    const Rows rem = Db::getAll("reminders", "is_completed=0 AND due_date <= ?", {cutoff}, "due_date ASC");
     if (rem.isEmpty()) {
         remCard->addWidget(makeMuted("Nothing due in the next 7 days."));
     } else {
+        int shown = 0;
         for (const Row &r : rem) {
+            if (shown++ >= 10) break;
+            const int rid = M::i(r, "id");
+            const bool overdue = M::s(r, "due_date") <= nowStr;
             auto *line = new QWidget;
             auto *l = new QHBoxLayout(line);
             l->setContentsMargins(0, 4, 0, 4);
+            l->setSpacing(8);
             auto *msg = new QLabel(M::s(r, "message"));
             msg->setWordWrap(true);
             l->addWidget(msg, 1);
-            l->addWidget(makeBadge(M::s(r, "due_date").left(10), Tone::Warn));
+            l->addWidget(makeBadge(overdue ? "due" : M::s(r, "due_date").left(10),
+                                   overdue ? Tone::Crit : Tone::Warn));
+            auto *done = new QPushButton("Done");
+            done->setFixedHeight(24);
+            connect(done, &QPushButton::clicked, this, [this, rid]() {
+                ReminderEngine::completeReminder(rid, true);
+                if (m_main) m_main->refreshCurrent();
+            });
+            l->addWidget(done);
             remCard->addWidget(line);
         }
     }
+    remCard->body()->addStretch();
     right->addWidget(remCard);
 
     auto *actCard = new Card("Recent Activity");

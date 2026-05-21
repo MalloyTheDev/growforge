@@ -101,21 +101,6 @@ QFrame *vLine() {
     return f;
 }
 
-QPushButton *makeChip(const QString &text) {
-    const Config::Palette &p = Theme::current();
-    auto *b = new QPushButton(text);
-    b->setCheckable(true);
-    b->setCursor(Qt::PointingHandCursor);
-    b->setStyleSheet(QString(
-        "QPushButton { border:1px solid %1; border-radius:999px; padding:5px 12px;"
-        " color:%2; background:%3; font-size:12px; }"
-        "QPushButton:hover { color:%4; border-color:%4; }"
-        "QPushButton:checked { color:%5; border-color:%6; background:%7; }")
-        .arg(p.lineStrong, p.fg1, p.bg3, p.fg0, p.accent, p.accentLine, p.accentSoft));
-    b->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Fixed);
-    return b;
-}
-
 QWidget *makePageHeader(const QString &title, const QString &subtitle, QWidget *rightWidget) {
     auto *w = new QWidget;
     auto *row = new QHBoxLayout(w);

@@ -121,9 +121,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
         // Search
         m_search = new QLineEdit;
-        m_search->setPlaceholderText("Search plants, events, strains…");
+        m_search->setPlaceholderText("Search the grow journal…  (press Enter)");
         m_search->setClearButtonEnabled(true);
         m_search->setMaximumWidth(360);
+        connect(m_search, &QLineEdit::returnPressed, this,
+                [this]() { runSearch(m_search->text().trimmed()); });
         tl->addWidget(m_search, 1);
 
         tl->addStretch();
@@ -163,8 +165,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // Reminder engine — surface due reminders as toasts.
     m_reminders = new ReminderEngine(this);
     connect(m_reminders, &ReminderEngine::remindersDue, this, [this](const Rows &due) {
-        for (const Row &r : due)
-            Toast::show(this, M::s(r, "message", "Reminder due!"), Toast::Info, 6000);
+        // Notify each due reminder only once per session to avoid repeat spam
+        // (reminders stay "due" until completed from the Dashboard).
+        for (const Row &r : due) {
+            const int id = M::i(r, "id");
+            if (m_notifiedReminders.contains(id)) continue;
+            m_notifiedReminders.insert(id);
+            Toast::show(this, "Reminder: " + M::s(r, "message", "task due"), Toast::Info, 6000);
+        }
     });
     m_reminders->start(Db::getSettingInt("reminder_check_interval", 60));
 }
@@ -311,6 +319,13 @@ void MainWindow::navigate(const QString &key) {
                              "<span style='color:%2'>/</span> "
                              "<span style='color:%3;font-weight:600'>%4</span>")
                          .arg(p.fg3, p.fg4, p.fg0, label));
+}
+
+void MainWindow::runSearch(const QString &text) {
+    if (text.isEmpty()) return;
+    navigate("journal");
+    if (auto *j = qobject_cast<JournalTab *>(m_pages.value("journal")))
+        j->setTextFilter(text);
 }
 
 void MainWindow::refreshCurrent() {
