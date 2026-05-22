@@ -24,6 +24,10 @@ AppUpdatesURL={#MyAppURL}/releases
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
+; Let the user choose all-users (admin) or just-me; data lives in %LOCALAPPDATA%
+; either way, so no administrator rights are strictly required.
+PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 UninstallDisplayIcon={app}\{#MyAppExeName}
 LicenseFile=..\..\LICENSE
 OutputDir=..\dist
