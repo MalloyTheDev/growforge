@@ -34,7 +34,7 @@
 #include <QPixmap>
 #include <QSignalBlocker>
 
-// ── Temporary placeholder page (replaced as real screens land) ───────────────
+// ── Defensive fallback page for an unknown navigation key (not normally hit) ──
 namespace {
 class PlaceholderPage : public Page {
 public:
@@ -43,7 +43,7 @@ public:
         auto *outer = new QVBoxLayout(this);
         outer->setContentsMargins(22, 22, 22, 22);
         outer->addWidget(makePageHeader(title, sub));
-        auto *note = makeMuted("This screen is being ported to Qt6. Coming soon.");
+        auto *note = makeMuted("This screen is unavailable.");
         outer->addWidget(note);
         outer->addStretch();
     }

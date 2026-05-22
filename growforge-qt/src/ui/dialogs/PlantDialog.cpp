@@ -14,6 +14,7 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QCompleter>
 
 PlantDialog::PlantDialog(const Row &existing, QWidget *parent) : QDialog(parent) {
     const bool editing = !existing.isEmpty();
@@ -31,9 +32,17 @@ PlantDialog::PlantDialog(const Row &existing, QWidget *parent) : QDialog(parent)
 
     m_strain = new QComboBox;
     m_strain->setEditable(true);
+    m_strain->setInsertPolicy(QComboBox::NoInsert);   // typing a custom strain won't mutate the list
+    m_strain->setMaxVisibleItems(20);
     m_strain->addItem("");
-    m_strain->addItems(KB::strainNames());
+    m_strain->addItems(KB::strainNames());            // 2,300+ entries
     m_strain->setCurrentText(M::s(existing, "strain_name"));
+    // Make the large library searchable: type any fragment, case-insensitive.
+    if (QCompleter *c = m_strain->completer()) {
+        c->setCompletionMode(QCompleter::PopupCompletion);
+        c->setCaseSensitivity(Qt::CaseInsensitive);
+        c->setFilterMode(Qt::MatchContains);
+    }
 
     m_plantType = new QComboBox;
     m_plantType->addItems(Config::PLANT_TYPES);
