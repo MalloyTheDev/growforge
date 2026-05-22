@@ -72,8 +72,9 @@ windeployqt --release --compiler-runtime build/growforge.exe
 > which take precedence and resolve the mismatch.
 
 On first launch the app creates `data/`, `photos/`, `exports/`, and `backups/`
-folders, creates the SQLite database `growforge.db` next to the executable, loads
-the strain library, and inserts sample data so the screens aren't empty.
+folders, creates the SQLite database `growforge.db` next to the executable, and loads
+the strain library. A new install starts empty (no demo plants); optional sample data
+can be loaded from **Settings → Data → Load sample data**.
 
 ## Project layout
 

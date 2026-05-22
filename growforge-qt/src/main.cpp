@@ -1,8 +1,6 @@
 #include <QApplication>
 #include <QDir>
-#include <QFile>
 #include <QLabel>
-#include <QTextStream>
 #include <QTimer>
 
 #include "app/Config.h"
@@ -35,19 +33,12 @@ int main(int argc, char *argv[])
         return app.exec();
     }
 
-    // Load/sync the strain library. Done in one transaction with INSERT OR IGNORE
-    // so seeding ~2,400 strains is fast and re-runs skip already-present names.
+    // Load/sync the strain library (reference data). Done in one transaction with
+    // INSERT OR IGNORE so seeding ~2,400 strains is fast and re-runs skip existing.
+    // Note: a new install otherwise starts EMPTY — no demo plants/events. Sample
+    // data is opt-in via Settings → Data → "Load sample data".
     if (Db::count("strains") < KB::strainLibrary().size())
         Db::bulkInsertIgnore("strains", KB::strainsAsRows());
-
-    // First-launch sample data.
-    if (Db::getSettingBool("first_launch", true)) {
-        QFile f(":/sample_data.sql");
-        if (f.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            Db::runScript(QTextStream(&f).readAll());
-        }
-        Db::setSetting("first_launch", "false");
-    }
 
     const QString theme = Db::getSettingStr("theme", "dark");
     Theme::apply(&app, theme);

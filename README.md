@@ -111,10 +111,11 @@ cmake --build build
 ```
 
 On first launch the app creates its data folders and SQLite database next to the
-executable, loads the strain library, and seeds sample data so you can explore
-immediately. See **[`growforge-qt/README.md`](growforge-qt/README.md)** for exact
-Windows/MinGW commands, MSVC notes, and how to produce a self-contained bundle with
-`windeployqt`.
+executable and loads the strain library. A new install starts **empty** — your grow
+is yours to fill in. If you'd like demo data to explore the features, use
+**Settings → Data → Load sample data**. See
+**[`growforge-qt/README.md`](growforge-qt/README.md)** for exact Windows/MinGW
+commands, MSVC notes, and how to produce a self-contained bundle with `windeployqt`.
 
 ---
 

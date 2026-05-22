@@ -15,6 +15,9 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QCoreApplication>
+#include <QMessageBox>
+#include <QFile>
+#include <QTextStream>
 
 SettingsTab::SettingsTab(MainWindow *main) : ScrollPage(main) {}
 
@@ -104,6 +107,31 @@ void SettingsTab::refresh() {
             Toast::show(this, "Export failed.", Toast::Error);
     });
     dataCard->addWidget(exportBtn);
+
+    // Opt-in demo data — new installs start empty.
+    auto *sampleBtn = new QPushButton("Load sample data");
+    sampleBtn->setToolTip("Add a few demo plants, environments, and journal entries to explore the app.");
+    connect(sampleBtn, &QPushButton::clicked, this, [this]() {
+        if (Db::count("plants") > 0) {
+            QMessageBox box(this);
+            box.setWindowTitle("Load Sample Data");
+            box.setText("Add demo plants, environments, and journal entries?");
+            box.setInformativeText("You already have data — sample entries will be added alongside it.");
+            box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+            box.setDefaultButton(QMessageBox::No);
+            if (box.exec() != QMessageBox::Yes) return;
+        }
+        QFile f(":/sample_data.sql");
+        if (f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            Db::runScript(QTextStream(&f).readAll());
+            Toast::show(this, "Sample data loaded.", Toast::Success);
+            m_main->refreshChrome();
+            refresh();
+        } else {
+            Toast::show(this, "Sample data unavailable.", Toast::Error);
+        }
+    });
+    dataCard->addWidget(sampleBtn);
     root->addWidget(dataCard);
 
     // ── About ──
