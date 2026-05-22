@@ -30,6 +30,21 @@ It is built in **C++17 with Qt 6 (Qt Widgets)** and wears a dense, dark
 
 ---
 
+## Download
+
+Grab the latest Windows build from the
+**[Releases](https://github.com/MalloyTheDev/growforge/releases)** page:
+
+- **Installer** — `GrowForge-<version>-setup.exe`: run it for a Start Menu shortcut and
+  an uninstaller. Data is stored per-user in `%LOCALAPPDATA%\GrowForge`.
+- **Portable ZIP** — `GrowForge-<version>-windows-x64.zip`: unzip and run `growforge.exe`,
+  no installation. Keeps its data in the folder, so it runs from a USB drive too.
+
+Both are self-contained — no separate Qt or runtime install needed. Prefer to build it
+yourself? See **[Build & run](#build--run)**.
+
+---
+
 ## Highlights
 
 - **Local-first & private** — all data stays in a single SQLite file beside the app.

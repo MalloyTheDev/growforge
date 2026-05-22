@@ -5,6 +5,7 @@
 
 #include "app/Config.h"
 #include "app/Theme.h"
+#include "app/Paths.h"
 #include "data/Database.h"
 #include "data/KnowledgeBase.h"
 #include "ui/MainWindow.h"
@@ -16,16 +17,12 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     app.setApplicationName(Config::APP_NAME);
     app.setApplicationVersion(Config::APP_VERSION);
-    app.setOrganizationName("GrowForge");
     app.setWindowIcon(Icons::icon("growing", 64, QColor(Config::DARK.accent)));
 
-    // Data lives next to the executable (mirrors the Python app layout).
-    const QString base = QCoreApplication::applicationDirPath();
-    QDir().mkpath(base + "/data");
-    QDir().mkpath(base + "/photos");
-    QDir().mkpath(base + "/exports");
-    QDir().mkpath(base + "/backups");
-    const QString dbPath = base + "/growforge.db";
+    // Data lives in a per-user writable folder (%LOCALAPPDATA%/GrowForge), or next
+    // to the executable in portable mode (see app/Paths.h).
+    Paths::ensureDirs();
+    const QString dbPath = Paths::dbPath();
 
     if (!Db::init(dbPath)) {
         QLabel err("Failed to open database:\n" + Db::lastError());

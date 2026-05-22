@@ -7,6 +7,7 @@
 #include "ui/dialogs/EventDialog.h"
 #include "app/Config.h"
 #include "app/Theme.h"
+#include "app/Paths.h"
 #include "data/Database.h"
 #include "core/ReminderEngine.h"
 #include "core/Exporter.h"
@@ -206,10 +207,9 @@ void PlantsTab::exportReport(const Row &plant) {
     Row env;
     if (!M::s(plant, "environment_id").isEmpty())
         env = Db::getRow("environments", M::i(plant, "environment_id"));
-    const QString dir = QCoreApplication::applicationDirPath() + "/exports";
-    const QString path = Exporter::exportPlantReportPdf(plant, events, env, dir);
+    const QString path = Exporter::exportPlantReportPdf(plant, events, env, Paths::exportsDir());
     if (path.isEmpty())
         Toast::show(this, "PDF export failed.", Toast::Error);
     else
-        Toast::show(this, "Report saved to exports/.", Toast::Success, 5000);
+        Toast::show(this, "Report saved to the exports folder.", Toast::Success, 5000);
 }

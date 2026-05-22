@@ -4,6 +4,7 @@
 #include "ui/widgets/CommonWidgets.h"
 #include "app/Config.h"
 #include "app/Theme.h"
+#include "app/Paths.h"
 #include "data/Database.h"
 #include "core/Exporter.h"
 
@@ -94,15 +95,15 @@ void SettingsTab::refresh() {
 
     // ── Data ──
     auto *dataCard = new Card("Data");
-    dataCard->addWidget(makeKeyValue("Database", QCoreApplication::applicationDirPath() + "/growforge.db"));
+    dataCard->addWidget(makeKeyValue("Database", Paths::dbPath()));
     dataCard->addWidget(makeKeyValue("Plants", QString::number(Db::count("plants"))));
     dataCard->addWidget(makeKeyValue("Events", QString::number(Db::count("events"))));
     dataCard->addWidget(makeKeyValue("Strains", QString::number(Db::count("strains"))));
     auto *exportBtn = new QPushButton("Export all events to CSV");
     connect(exportBtn, &QPushButton::clicked, this, [this]() {
-        const QString path = QCoreApplication::applicationDirPath() + "/exports/all_events.csv";
+        const QString path = Paths::exportsDir() + "/all_events.csv";
         if (Exporter::exportEventsCsv(Db::getAll("events", QString(), {}, "event_date DESC"), path))
-            Toast::show(this, "Events exported to exports/all_events.csv", Toast::Success, 5000);
+            Toast::show(this, "Events exported to the exports folder.", Toast::Success, 5000);
         else
             Toast::show(this, "Export failed.", Toast::Error);
     });
