@@ -23,6 +23,10 @@ bool     getSettingBool(const QString &key, bool def = false);
 
 // ─── Generic CRUD (table/column whitelisted) ─────────────────────────────────
 int  insertRow(const QString &table, Row data);
+// Insert many rows in a single transaction using INSERT OR IGNORE (fast seed
+// loading; silently skips rows that violate a UNIQUE constraint). Returns the
+// number of rows inserted.
+int  bulkInsertIgnore(const QString &table, const Rows &rows);
 void updateRow(const QString &table, int id, Row data);
 void deleteRow(const QString &table, int id);
 Row  getRow(const QString &table, int id);

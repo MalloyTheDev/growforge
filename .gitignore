@@ -17,6 +17,9 @@ photos/
 shot_*.png
 _t.png
 
+# Raw source datasets (processed into growforge-qt/resources/knowledge.json)
+imports/
+
 # Editors / IDEs
 .vscode/
 .idea/

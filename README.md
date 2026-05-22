@@ -35,8 +35,9 @@ It is built in **C++17 with Qt 6 (Qt Widgets)** and wears a dense, dark
 - **Local-first & private** — all data stays in a single SQLite file beside the app.
 - **Full grow lifecycle** — eight stages from Germination to Harvested, with automatic
   stage-change logging and stage-appropriate reminders.
-- **Built-in knowledge base** — 50 strains plus stage guides, deficiency/symptom
-  patterns, nutrient and pest references, and training techniques — all offline.
+- **Built-in knowledge base** — a library of **2,300+ strains** plus stage guides,
+  deficiency/symptom patterns, nutrient and pest references, and training techniques —
+  all bundled and fully offline.
 - **Real calculators** — a live VPD calculator with a color-coded zone chart, a yield
   estimator, and a nutrient mixer.
 - **Professional reports** — export a formatted PDF grow report for any plant.
@@ -145,6 +146,22 @@ design/              The original UI design prototype the look is based on
 ```
 
 ---
+
+## Data sources & credits
+
+The bundled strain library (`growforge-qt/resources/knowledge.json`) is assembled from:
+
+- **Cannabis strain dataset** (≈2,350 strains: type, effects, flavor, descriptions) —
+  the widely-circulated Leafly-derived "Cannabis Strains" dataset.
+- **[Kushy Cannabis Dataset](https://github.com/kushyapp/cannabis-dataset)** — used for
+  canonical strain name casing. Licensed under the MIT License,
+  © 2016–present, Kushy.
+- **~50 hand-curated strains** with cultivation detail (breeder, flowering time, THC
+  range, yield) maintained in this project; these take precedence on name conflicts.
+
+The cultivation guidance (stage targets, symptom/deficiency patterns, nutrient and pest
+references, training techniques) is original to GrowForge. Strain data is provided for
+informational purposes only.
 
 ## License
 

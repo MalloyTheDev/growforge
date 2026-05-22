@@ -98,10 +98,11 @@ docs/         Screenshots
 - **Database** — `QtSql` over SQLite with WAL mode and foreign keys. Generic CRUD is
   guarded by table/column whitelisting and numeric field-range validation; phenotype
   overall scores are auto-averaged on insert.
-- **Knowledge base** — the data in the original Python `knowledge_base.py` (50 strains,
-  stage guides, symptom patterns, nutrient/pest data, training techniques) is exported
-  verbatim to `resources/knowledge.json` and parsed at runtime, so it stays faithful to
-  the source with no hand-transcription.
+- **Knowledge base** — `resources/knowledge.json` holds the cultivation guidance (stage
+  guides, symptom patterns, nutrient/pest data, training techniques) plus a strain library
+  of 2,300+ entries. It is parsed at runtime and seeded into the `strains` table on first
+  launch via a single transactional bulk insert. See the repository README for strain-data
+  credits.
 - **Charts** — sparklines and the VPD zone chart are custom `QPainter` widgets; there is
   no QtCharts dependency.
 - **Reminders** — a `QTimer` on the GUI thread polls for due reminders (safe with Qt SQL)

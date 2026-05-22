@@ -35,11 +35,10 @@ int main(int argc, char *argv[])
         return app.exec();
     }
 
-    // Load the strain library (once) — mirrors load_strain_library().
-    if (Db::count("strains") < KB::strainLibrary().size()) {
-        for (const Row &s : KB::strainsAsRows())
-            Db::insertRow("strains", s);
-    }
+    // Load/sync the strain library. Done in one transaction with INSERT OR IGNORE
+    // so seeding ~2,400 strains is fast and re-runs skip already-present names.
+    if (Db::count("strains") < KB::strainLibrary().size())
+        Db::bulkInsertIgnore("strains", KB::strainsAsRows());
 
     // First-launch sample data.
     if (Db::getSettingBool("first_launch", true)) {

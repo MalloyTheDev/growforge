@@ -346,6 +346,32 @@ int insertRow(const QString &table, Row data) {
     return q.lastInsertId().toInt();
 }
 
+int bulkInsertIgnore(const QString &table, const Rows &rows) {
+    if (!validateTable(table) || rows.isEmpty()) return 0;
+    QSqlDatabase db = conn();
+    const bool inTxn = db.transaction();   // one transaction → one fsync at commit
+    QSqlQuery q(db);
+    int inserted = 0;
+    for (Row data : rows) {
+        if (!validateColumns(data.keys())) continue;
+        if (table == "events") validateEventData(data);
+        else if (table == "phenotypes") autoCalcPhenoScore(data);
+        const QStringList keys = data.keys();
+        if (keys.isEmpty()) continue;
+        QStringList placeholders;
+        for (int i = 0; i < keys.size(); ++i) placeholders << "?";
+        q.prepare(QString("INSERT OR IGNORE INTO %1 (%2) VALUES (%3)")
+                      .arg(table, keys.join(", "), placeholders.join(", ")));
+        for (const QString &k : keys) q.addBindValue(data.value(k));
+        if (q.exec() && q.numRowsAffected() > 0) ++inserted;
+    }
+    if (inTxn && !db.commit()) {
+        g_lastError = db.lastError().text();
+        db.rollback();
+    }
+    return inserted;
+}
+
 void updateRow(const QString &table, int id, Row data) {
     if (!validateTable(table) || !validateColumns(data.keys())) return;
     if (table == "phenotypes") autoCalcPhenoScore(data);
