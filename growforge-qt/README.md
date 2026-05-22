@@ -1,39 +1,29 @@
-# GrowForge — Qt6 / C++
+# GrowForge — Qt 6 / C++
 
-A C++/Qt6 (Qt Widgets) rewrite of the GrowForge desktop cannabis grow assistant,
-originally a Python/customtkinter app. The UI adopts the "command center" dark
-design from the `Growjs/` React prototype while preserving the full feature set
-and SQLite data model of the Python app.
+A C++/Qt 6 (Qt Widgets) implementation of the GrowForge desktop grow assistant
+— originally a Python/customtkinter app. The UI adopts the dark "command-center"
+design from the prototype in [`../design/`](../design) while preserving the full
+feature set and SQLite data model.
 
 > From Seed to Harvest, Clone to Cross — 100% local & offline.
 
-## Features
-
-Twelve screens, all backed by a local SQLite database:
-
-- **Dashboard** — stat cards, active plants, upcoming reminders, recent activity
-- **Growing Hub** — Seed / Veg / Flower guidance (targets, checklists, common issues)
-- **Plants** — add/edit, stage advancement, event logging, PDF report, archive
-- **Environments** — tents/rooms with full settings; delete unlinks plants
-- **Grow Journal** — filterable event log with readings (pH/EC/temp/RH/VPD)
-- **Calendar** — monthly grid with event + reminder markers
-- **Cloning** — mother plants, clone batches, rooting progress, promote-to-plant
-- **Breeding Lab** — crosses with parent linking, phenotype scoring (10 categories)
-- **Deficiency Wizard** — multi-symptom weighted diagnosis with pH-lockout context
-- **Tools** — VPD calculator + zone chart, yield estimator, nutrient mixer, training library
-- **Settings** — theme, mode, units, reminder intervals, data export
-
-The knowledge base (50 strains, stage guides, symptom patterns, nutrient/pest data,
-training techniques) is exported verbatim from the Python `knowledge_base.py` into
-`resources/knowledge.json` and loaded at runtime.
+This document covers building, running, and the project structure. For a feature
+overview and screenshots, see the [repository README](../README.md).
 
 ## Prerequisites
 
-- **Qt 6** (6.5+) with the `Widgets`, `Sql`, and `PrintSupport` modules
-- **CMake** 3.21+
-- A **C++17** compiler. On Windows, the MinGW kit bundled with Qt works well.
+| Tool | Version | Notes |
+|---|---|---|
+| **Qt** | 6.5+ (developed on 6.11) | Modules: `Widgets`, `Sql`, `PrintSupport` |
+| **CMake** | 3.21+ | |
+| **Compiler** | any C++17 | MinGW (bundled with Qt) or MSVC on Windows; GCC/Clang on Linux |
+| **Ninja** | optional | Recommended generator |
 
-## Build (Windows, MinGW kit)
+## Build
+
+### Windows — MinGW (the kit bundled with Qt)
+
+The Qt MinGW build is ABI-specific, so use the matching bundled compiler:
 
 ```sh
 cmake -G Ninja -B build -S . \
@@ -43,43 +33,83 @@ cmake -G Ninja -B build -S . \
 cmake --build build
 ```
 
-(Adjust the Qt version/paths to your install. An MSVC kit works too — point
-`CMAKE_PREFIX_PATH` at the `msvc2022_64` directory and drop the compiler override.)
+### Windows — MSVC
+
+```sh
+cmake -G Ninja -B build -S . ^
+  -DCMAKE_PREFIX_PATH="C:/Qt/Qt6.11.0/6.11.0/msvc2022_64" ^
+  -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+```
+
+### Linux
+
+```sh
+cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_PREFIX_PATH="$HOME/Qt/6.11.0/gcc_64"   # or distro Qt6 (omit if on PATH)
+cmake --build build
+```
+
+Adjust the Qt version and paths to match your installation.
 
 ## Run
 
-The executable expects Qt's runtime DLLs on `PATH`. Either add
-`<Qt>/6.x/<kit>/bin` and `<Qt>/Tools/<mingw>/bin` to `PATH`, or deploy a
-self-contained bundle:
+The executable needs Qt's runtime libraries available. Either add the Qt `bin`
+directory (and, for MinGW, the compiler `bin`) to your `PATH`, or deploy a
+self-contained folder:
 
 ```sh
-build/growforge.exe                       # if Qt bin is on PATH
-# or, for a distributable folder:
-windeployqt build/growforge.exe
+# If the Qt bin directory is on PATH:
+build/growforge.exe
+
+# Otherwise, copy the required Qt DLLs/plugins next to the executable (Windows):
+windeployqt --release --compiler-runtime build/growforge.exe
 ```
 
-On first launch the app creates `data/`, `photos/`, `exports/`, `backups/`,
-the SQLite database `growforge.db` (next to the executable), loads the strain
-library, and inserts sample data.
+> **Tip (Windows):** if double-clicking the `.exe` reports a missing entry point
+> such as `qt_version_tag_6_xx`, an *older* Qt is being picked up from your `PATH`.
+> Running `windeployqt` places the correct Qt libraries beside the executable,
+> which take precedence and resolve the mismatch.
+
+On first launch the app creates `data/`, `photos/`, `exports/`, and `backups/`
+folders, creates the SQLite database `growforge.db` next to the executable, loads
+the strain library, and inserts sample data so the screens aren't empty.
 
 ## Project layout
 
 ```
 src/
-  app/        Config (constants, palette) + Theme (QSS generation)
-  data/       Models (Row helpers), Database (Qt SQL), KnowledgeBase (JSON)
-  core/       VpdCalculator, ReminderEngine, Exporter (PDF/CSV), AiEngine
-  ui/         MainWindow (sidebar+topbar+stack), Page/ScrollPage, Toast, Helpers
+  app/        Config (constants, color palette) + Theme (QSS generation)
+  data/       Models (Row helpers), Database (Qt SQL), KnowledgeBase (JSON loader)
+  core/       VpdCalculator, ReminderEngine, Exporter (PDF/CSV)
+  ui/         MainWindow (sidebar + topbar + stacked pages), Page/ScrollPage,
+              Toast, Helpers (validation)
     widgets/  Icons, CommonWidgets (Card/Badge/MetricCard), Sparkline, VpdChart
-    dialogs/  Plant/Event/Environment/CloneBatch/Breeding dialogs
-    pages/    The twelve screens
-resources/    style.qss, sample_data.sql, knowledge.json (Qt resource)
+    dialogs/  Plant / Event / Environment / CloneBatch / Breeding dialogs
+    pages/    The eleven screens
+resources/    style.qss, sample_data.sql, knowledge.json  (compiled in via Qt resources)
+docs/         Screenshots
 ```
 
-## Notes
+## Implementation notes
 
-- The original Python app's "AI Assistant" is intentionally **not** ported.
-- Charts (sparklines, VPD zone grid) are drawn with `QPainter` — no extra deps.
-- A few `GROWFORGE_*` environment variables (`SHOT`, `NAV`, `SIZE`) drive
-  headless screenshots for development and are inert unless set.
-```
+- **Theme** — the whole UI is a single QSS stylesheet generated at runtime from a
+  typed `Config::Palette`, so the dark/light themes share one source of truth.
+- **Database** — `QtSql` over SQLite with WAL mode and foreign keys. Generic CRUD is
+  guarded by table/column whitelisting and numeric field-range validation; phenotype
+  overall scores are auto-averaged on insert.
+- **Knowledge base** — the data in the original Python `knowledge_base.py` (50 strains,
+  stage guides, symptom patterns, nutrient/pest data, training techniques) is exported
+  verbatim to `resources/knowledge.json` and parsed at runtime, so it stays faithful to
+  the source with no hand-transcription.
+- **Charts** — sparklines and the VPD zone chart are custom `QPainter` widgets; there is
+  no QtCharts dependency.
+- **Reminders** — a `QTimer` on the GUI thread polls for due reminders (safe with Qt SQL)
+  and creates stage-appropriate reminders when a plant advances.
+- **Dev hooks** — `GROWFORGE_SHOT=<path>` renders the window to a PNG and exits;
+  `GROWFORGE_NAV=<page>` and `GROWFORGE_SIZE=WxH` set the initial page and size. These
+  are inert unless the environment variables are set.
+
+## License
+
+MIT — see [LICENSE](../LICENSE).
