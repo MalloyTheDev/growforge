@@ -99,9 +99,11 @@ QWidget *GrowingHubTab::buildGroup(const QString &groupKey, const QString &guide
             auto *r = new QHBoxLayout(w);
             r->setContentsMargins(0, 6, 0, 6);
             auto *name = new QLabel(M::s(p, "name"));
+            name->setTextFormat(Qt::PlainText);
             name->setStyleSheet(QString("color:%1; font-weight:600;").arg(Theme::current().fg0));
             r->addWidget(name);
             auto *strain = new QLabel(M::s(p, "strain_name"));
+            strain->setTextFormat(Qt::PlainText);
             strain->setStyleSheet(QString("color:%1; font-size:11px;").arg(Theme::current().fg2));
             r->addWidget(strain);
             r->addStretch();

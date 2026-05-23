@@ -41,6 +41,7 @@ void BreedingTab::refresh() {
         const QString parents = QString("%1  ×  %2")
             .arg(M::s(x, "mother_strain", "?"), M::s(x, "father_strain", "?"));
         auto *pl = new QLabel(parents);
+        pl->setTextFormat(Qt::PlainText);
         pl->setStyleSheet(QString("color:%1; font-family:'%2'; font-size:13px;")
                               .arg(Theme::current().fg0, Theme::monoFamily()));
         card->addWidget(pl);
@@ -69,6 +70,7 @@ void BreedingTab::refresh() {
                 auto *r = new QHBoxLayout(w);
                 r->setContentsMargins(0, 4, 0, 4);
                 auto *nm = new QLabel(M::s(ph, "pheno_name"));
+                nm->setTextFormat(Qt::PlainText);
                 nm->setStyleSheet(QString("color:%1; font-weight:600;").arg(Theme::current().fg0));
                 r->addWidget(nm);
                 if (M::b(ph, "is_keeper")) r->addWidget(makeBadge("Keeper", Tone::Accent));

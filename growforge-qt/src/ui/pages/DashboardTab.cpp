@@ -22,9 +22,11 @@ static QWidget *plantRow(const Row &p) {
     auto *col = new QVBoxLayout;
     col->setSpacing(2);
     auto *name = new QLabel(M::s(p, "name"));
+    name->setTextFormat(Qt::PlainText);
     name->setStyleSheet(QString("color:%1; font-weight:600;").arg(Theme::current().fg0));
     auto *strain = new QLabel(M::s(p, "strain_name", "—"));
     strain->setProperty("role", "muted");
+    strain->setTextFormat(Qt::PlainText);
     strain->setStyleSheet(QString("color:%1; font-size:11px;").arg(Theme::current().fg2));
     col->addWidget(name);
     col->addWidget(strain);
@@ -118,6 +120,7 @@ void DashboardTab::refresh() {
             l->setSpacing(8);
             auto *msg = new QLabel(M::s(r, "message"));
             msg->setWordWrap(true);
+            msg->setTextFormat(Qt::PlainText);
             l->addWidget(msg, 1);
             l->addWidget(makeBadge(overdue ? "due" : M::s(r, "due_date").left(10),
                                    overdue ? Tone::Crit : Tone::Warn));

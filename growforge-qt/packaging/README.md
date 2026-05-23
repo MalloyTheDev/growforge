@@ -65,6 +65,44 @@ uninstaller, and (optionally) a desktop icon.
   kept in that folder instead — move it or run it from a USB drive freely. Delete
   `portable.txt` to switch a portable copy back to the per-user location.
 
+## Code signing & SmartScreen
+
+When you download or run an **unsigned** executable, Windows/Edge SmartScreen shows a
+red warning ("isn't commonly downloaded" / "unknown publisher"). This is expected for
+any new app that isn't code-signed and has no download reputation yet — it is **not** a
+sign anything is wrong with the build. The only way to remove it is to **Authenticode
+code-sign** the executables with a trusted certificate.
+
+**Certificate options:**
+
+| Option | Cost | SmartScreen behavior |
+|---|---|---|
+| **Azure Trusted Signing** | ~$10/mo | Microsoft-run signing service; good reputation. Best value for indie devs. Requires a verified identity. |
+| **OV** (Organization Validation) cert | ~$200–400/yr | Removes "unknown publisher"; SmartScreen reputation still builds up over downloads. |
+| **EV** (Extended Validation) cert | ~$300–600/yr | **Instant** SmartScreen reputation (no warning on first download). Requires a hardware token / cloud HSM. |
+| Self-signed | free | **Does not help distribution** — only trusted on machines that import the cert. |
+
+`signtool.exe` (Windows SDK) is already on this machine; you only need the certificate.
+
+**Sign with [`sign.ps1`](sign.ps1)** — sign the app exe *before* building the installer,
+then sign the installer:
+
+```powershell
+# 1. build + windeployqt into dist\GrowForge  (steps 1–2 above)
+# 2. sign the app executable
+powershell -ExecutionPolicy Bypass -File packaging\sign.ps1 -Pfx C:\path\cert.pfx -Password **** `
+  -Files dist\GrowForge\growforge.exe
+# 3. build the installer (step 4), which now packages the signed exe
+cd packaging; iscc growforge.iss; cd ..
+# 4. sign the installer itself
+powershell -ExecutionPolicy Bypass -File packaging\sign.ps1 -Pfx C:\path\cert.pfx -Password **** `
+  -Files dist\GrowForge-1.0.0-setup.exe
+```
+
+(With a cert installed in the Windows store, use `-Thumbprint <sha1>` instead of `-Pfx`.)
+The script SHA-256 signs with an RFC-3161 timestamp and verifies each file. The `.zip` is
+not signable, but the `growforge.exe` inside it is.
+
 ## Publishing a release
 
 ```sh

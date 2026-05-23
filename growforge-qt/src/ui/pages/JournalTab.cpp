@@ -41,6 +41,7 @@ QWidget *JournalTab::eventRow(const Row &e, bool showPlant) {
     top->addWidget(makeBadge(M::s(e, "event_type"), typeTone(M::s(e, "event_type"))));
     if (showPlant && !M::s(e, "plant_name").isEmpty()) {
         auto *pn = new QLabel(M::s(e, "plant_name"));
+        pn->setTextFormat(Qt::PlainText);
         pn->setStyleSheet(QString("color:%1; font-size:12px;").arg(Theme::current().fg1));
         top->addWidget(pn);
     }
@@ -51,12 +52,14 @@ QWidget *JournalTab::eventRow(const Row &e, bool showPlant) {
     const QString notes = M::s(e, "notes");
     if (!title.isEmpty() && title != M::s(e, "event_type")) {
         auto *t = new QLabel(title);
+        t->setTextFormat(Qt::PlainText);
         t->setStyleSheet(QString("color:%1; font-weight:600;").arg(Theme::current().fg0));
         v->addWidget(t);
     }
     if (!notes.isEmpty()) {
         auto *n = new QLabel(notes);
         n->setWordWrap(true);
+        n->setTextFormat(Qt::PlainText);
         n->setStyleSheet(QString("color:%1; font-size:12px;").arg(Theme::current().fg1));
         v->addWidget(n);
     }

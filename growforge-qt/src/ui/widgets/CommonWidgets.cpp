@@ -54,11 +54,13 @@ QLabel *makeMuted(const QString &text) {
     auto *l = new QLabel(text);
     l->setProperty("role", "muted");
     l->setWordWrap(true);
+    l->setTextFormat(Qt::PlainText); // never interpret user/DB text as rich text
     return l;
 }
 
 QLabel *makeBadge(const QString &text, Tone::T tone) {
     auto *l = new QLabel(text);
+    l->setTextFormat(Qt::PlainText);
     const QString c = toneColor(tone);
     QColor base(c);
     const QString bg = QString("rgba(%1,%2,%3,0.16)").arg(base.red()).arg(base.green()).arg(base.blue());
@@ -121,9 +123,11 @@ QWidget *makeKeyValue(const QString &key, const QString &value) {
     row->setContentsMargins(0, 4, 0, 4);
     auto *k = new QLabel(key);
     k->setProperty("role", "muted");
+    k->setTextFormat(Qt::PlainText);
     auto *v = new QLabel(value);
     v->setProperty("mono", "true");
     v->setAlignment(Qt::AlignRight);
+    v->setTextFormat(Qt::PlainText);
     row->addWidget(k);
     row->addStretch();
     row->addWidget(v);

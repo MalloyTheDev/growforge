@@ -28,6 +28,7 @@ QWidget *CloningTab::cloneRow(const Row &clone, const Row &batch) {
     r->setContentsMargins(0, 4, 0, 4);
     r->setSpacing(8);
     auto *name = new QLabel(M::s(clone, "clone_name"));
+    name->setTextFormat(Qt::PlainText);
     name->setStyleSheet(QString("color:%1;").arg(Theme::current().fg1));
     r->addWidget(name);
     r->addWidget(makeStageBadge(M::s(clone, "stage")));
