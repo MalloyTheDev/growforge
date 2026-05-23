@@ -11,7 +11,7 @@
 namespace Config {
 
 inline const QString APP_NAME = "GrowForge";
-inline const QString APP_VERSION = "1.0.0";
+inline const QString APP_VERSION = "1.0.1";
 inline const QString APP_TAGLINE = "From Seed to Harvest, Clone to Cross";
 
 // ─── Palette ────────────────────────────────────────────────────────────────

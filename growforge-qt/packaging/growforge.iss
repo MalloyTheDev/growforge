@@ -6,7 +6,7 @@
 ; (produced by build/growforge.exe + windeployqt — see packaging/README.md).
 
 #define MyAppName "GrowForge"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "Brendan Malloy"
 #define MyAppURL "https://github.com/MalloyTheDev/growforge"
 #define MyAppExeName "growforge.exe"
